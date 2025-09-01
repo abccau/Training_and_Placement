@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard - Aptitude Test Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>User Dashboard</h4>
+            </div>
+            <div class="card-body">
+                <h5>Welcome, {{ session.username }}!</h5>
+                <p>From here, you can view available tests and your test results.</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="{{ url_for('available_tests') }}" class="btn btn-primary">
+                        <i class="fas fa-clipboard-list me-2"></i>View Available Tests
+                    </a>
+                    <a href="{{ url_for('reset_password') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-key me-2"></i>Reset Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Available Tests</h5>
+            </div>
+            <div class="card-body">
+                {% if tests %}
+                    <div class="list-group">
+                        {% for test in tests %}
+                            <a href="{{ url_for('take_test', test_id=test[0]) }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ test[1] }}</h5>
+                                    <small>{{ test[2] }} minutes</small>
+                                </div>
+                                <small class="text-muted">Created on {{ test[5] }}</small>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>No tests are available at the moment.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('available_tests') }}" class="btn btn-sm btn-outline-primary">View All Tests</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Your Test Results</h5>
+            </div>
+            <div class="card-body">
+                {% if results %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Test Name</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                    <tr>
+                                        <td>{{ result.test_name }}</td>
+                                        <td>{{ result.score }}</td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar {% if result.percentage >= 70 %}bg-success{% elif result.percentage >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                    role="progressbar" 
+                                                    style="width: {{ result.percentage }}%" 
+                                                    aria-valuenow="{{ result.percentage }}" 
+                                                    aria-valuemin="0" 
+                                                    aria-valuemax="100">
+                                                    {{ result.percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ result.formatted_date }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>You haven't taken any tests yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Anti-Cheating Reminder</h5>
+            </div>
+            <div class="card-body">
+                <p>Please be aware that our platform includes anti-cheating measures:</p>
+                <ul>
+                    <li>Tab switching detection</li>
+                    <li>Application switching detection</li>
+                    <li>Keyboard shortcut monitoring</li>
+                    <li>Right-click prevention</li>
+                </ul>
+                <p class="mb-0"><strong>Warning Policy:</strong> You will receive warnings for suspicious activities. After three warnings, your test will be automatically terminated.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
